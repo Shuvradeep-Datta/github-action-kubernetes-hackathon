@@ -11,7 +11,7 @@ echo "Starting backup..."
 echo "Taking MySQL backup..."
 
 kubectl exec -n dev mysql-0 -- \
-  mysqldump -u skillpulse -pskillpulse123 skillpulse \
+  mysqldump --no-tablespaces -u skillpulse -pskillpulse123 skillpulse \
   > $BACKUP_DIR/mysql-backup.sql
 
 
