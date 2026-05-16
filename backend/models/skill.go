@@ -11,6 +11,7 @@ type Skill struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+
 type CreateSkillRequest struct {
 	Name        string `json:"name" binding:"required"`
 	Category    string `json:"category"`
