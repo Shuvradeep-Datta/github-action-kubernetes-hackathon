@@ -42,3 +42,87 @@ jobs:
           git add k8s/20-backend.yaml k8s/30-frontend.yaml
           git commit -m "deploy: pin backend+frontend to ${SHA:0:7}"
           git push
+  
+  
+  deploy-dev:
+    needs: bump-manifests
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' && vars.DEPLOY_ENABLED == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: dev
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy DEV
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ~/github-action-kubernetes-hackathon
+
+            git pull origin main
+
+            make apply NAMESPACE=dev
+
+
+  deploy-staging:
+    needs: deploy-dev
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' && vars.DEPLOY_ENABLED == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy STAGING
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ~/github-action-kubernetes-hackathon
+
+            git pull origin main
+
+            make apply NAMESPACE=staging
+
+
+  deploy-prod:
+    needs: deploy-staging
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' && vars.DEPLOY_ENABLED == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: prod
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy PROD
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ~/github-action-kubernetes-hackathon
+
+            git pull origin main
+
+            make apply NAMESPACE=prod
