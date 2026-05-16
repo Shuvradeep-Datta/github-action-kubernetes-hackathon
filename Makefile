@@ -24,10 +24,10 @@ load: ## Push built images into the kind node
 
 apply:
 	export NAMESPACE=$(NAMESPACE) && \
-	envsubst < k8s/00-namespace.yml | kubectl apply -f - && \
-	envsubst < k8s/10-mysql.yml | kubectl apply -f - && \
-	envsubst < k8s/20-backend.yml | kubectl apply -f - && \
-	envsubst < k8s/30-frontend.yml | kubectl apply -f -
+	envsubst < k8s/00-namespace.yaml | kubectl apply -f - && \
+	envsubst < k8s/10-mysql.yaml | kubectl apply -f - && \
+	envsubst < k8s/20-backend.yaml | kubectl apply -f - && \
+	envsubst < k8s/30-frontend.yaml | kubectl apply -f -
 
 	kubectl rollout status statefulset/mysql -n $(NAMESPACE) --timeout=180s
 	kubectl rollout status deployment/backend -n $(NAMESPACE) --timeout=120s
