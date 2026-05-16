@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: skillpulse-db
-  namespace: skillpulse
+  namespace: ${NAMESPACE}
 type: Opaque
 stringData:
   MYSQL_ROOT_PASSWORD: rootpassword123
@@ -15,7 +15,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-init
-  namespace: skillpulse
+  namespace: ${NAMESPACE}
 data:
   init.sql: |
     CREATE DATABASE IF NOT EXISTS skillpulse;
@@ -61,7 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql
-  namespace: skillpulse
+  namespace: ${NAMESPACE}
   labels:
     app: mysql
 spec:
@@ -77,7 +77,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mysql
-  namespace: skillpulse
+  namespace: ${NAMESPACE}
 spec:
   serviceName: mysql
   replicas: 1

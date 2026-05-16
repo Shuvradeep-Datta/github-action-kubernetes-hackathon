@@ -22,14 +22,16 @@ load: ## Push built images into the kind node
 	kind load docker-image $(BACKEND_IMAGE)  --name $(CLUSTER)
 	kind load docker-image $(FRONTEND_IMAGE) --name $(CLUSTER)
 
-apply: ## Apply manifests and wait for rollouts
-	kubectl apply -f k8s/00-namespace.yaml \
-	              -f k8s/10-mysql.yaml \
-	              -f k8s/20-backend.yaml \
-	              -f k8s/30-frontend.yaml
-	kubectl rollout status statefulset/mysql    -n $(NAMESPACE) --timeout=180s
-	kubectl rollout status deployment/backend   -n $(NAMESPACE) --timeout=120s
-	kubectl rollout status deployment/frontend  -n $(NAMESPACE) --timeout=60s
+apply:
+	export NAMESPACE=$(NAMESPACE) && \
+	envsubst < k8s/00-namespace.yml | kubectl apply -f - && \
+	envsubst < k8s/10-mysql.yml | kubectl apply -f - && \
+	envsubst < k8s/20-backend.yml | kubectl apply -f - && \
+	envsubst < k8s/30-frontend.yml | kubectl apply -f -
+
+	kubectl rollout status statefulset/mysql -n $(NAMESPACE) --timeout=180s
+	kubectl rollout status deployment/backend -n $(NAMESPACE) --timeout=120s
+	kubectl rollout status deployment/frontend -n $(NAMESPACE) --timeout=60s
 
 down: ## Delete the cluster
 	kind delete cluster --name $(CLUSTER)
