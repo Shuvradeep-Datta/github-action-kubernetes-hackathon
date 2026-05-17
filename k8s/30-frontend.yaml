@@ -47,11 +47,11 @@ spec:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 5
+            initialDelaySeconds: 20
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 2
-            periodSeconds: 5
+            initialDelaySeconds: 20
+            periodSeconds: 10
